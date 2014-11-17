@@ -35,6 +35,7 @@ See tests/main.c for usage examples.
 AUTO_ARRAY
 
 SYNOPSIS
+
        #include <softsprocket/containers.h>
 
        auto_array* auto_array_create (size_t initial_size);
@@ -49,6 +50,7 @@ SYNOPSIS
        Link with -lsscont.
 
 DESCRIPTION
+
        These functions provide an interface to an auto sizing array in C.
 
        auto_array* auto_array_create (size_t initial_size)
@@ -101,6 +103,7 @@ DESCRIPTION
 HASH_TABLE
 
 SYNOPSIS
+
        #include <softsprocket/containers.h>
 
        hash_table* hash_table_create (size_t size_table)
@@ -114,6 +117,7 @@ SYNOPSIS
        Link with -lsscont.
 
 DESCRIPTION
+
        These functions provide an interface to an auto sizing hash_table in C.
 
        hash_table* hash_table_create (size_t size_table)
@@ -172,6 +176,7 @@ DESCRIPTION
 SET
 
 SYNOPSIS
+
        #include <softsprocket/containers.h>
 
        set* set_create (size_t size, int (*equals) (void*, void*));
@@ -187,6 +192,7 @@ SYNOPSIS
        Link with -lsscont.
 
 DESCRIPTION
+
        These functions provide an interface to a fixed size set container and set operations.
 
        set* set_create (size_t size, int (*equals) (void*, void*))
@@ -248,6 +254,7 @@ DESCRIPTION
 AUTO_STRING
 
 SYNOPSIS
+
        #include <softsprocket/containers.h>
 
        auto_string* auto_string_create (size_t initial_size);
@@ -258,6 +265,7 @@ SYNOPSIS
        Link with -lsscont.
 
 DESCRIPTION
+
        These functions provide an interface to an auto sizing string in C.
 
        auto_string* auto_string_create (size_t initial_size)

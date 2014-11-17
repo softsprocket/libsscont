@@ -1,0 +1,149 @@
+.\" Process this file with
+.\" groff -man -Tascii auto_string.3
+.\"
+.TH AUTO_STRING 3 2014.11.01 "" "SoftSprocket libsscont"
+.SH NAME
+auto_string_create auto_string_length auto_string_append auto_string_delete  \- auto sizing string in C
+.SH SYNOPSIS
+.nf
+.B #include <softsprocket/containers.h>
+.sp
+.B auto_string* auto_string_create (size_t initial_size);
+.br
+.B auto_string* auto_string_append (auto_string* as, char* str);
+.br
+.B size_t auto_string_length (auto_string* as);
+.br
+.B void auto_string_delete (auto_string* as);
+.fi
+.sp
+Link with \fI\-lsscont\fP.
+.sp
+.SH DESCRIPTION
+These functions provide an interface to an auto sizing string in C.
+.sp
+.br 
+auto_string* auto_string_create (size_t initial_size)  	
+.in +4n
+.br
+initial_size - the number of char the string is initialized for.
+.br
+returns - a pointer to an auto_string or NULL if an error occurs
+.in
+.br
+.sp
+void auto_string_delete (auto_string* as)
+.in +4n
+.br		
+as - the auto_string to operate on - frees allocated memory
+.in
+.br
+.sp
+.nf
+The structure that is returned by auto_string_create: 
+
+typedef struct {
+	size_t size; /** current allocated size */
+	size_t count; /** current count of used elements */
+	char* buf; /** Nul terminated char buffer */
+} auto_string;
+
+The member, buf, is a C string.
+
+.fi
+.br
+.sp
+void* auto_string_append (auto_string* as, char* str)
+.br
+.in +4n
+as - the auto_string to operate on
+.br
+str - the string to append - this function makes acopy of the string. The original string is not changed
+and the programmer must reclaim any memory that has been allocated for it.
+.br
+returns - an auto_string or NULL if an error occurs
+.br
+.in
+.sp
+size_t auto_string_length (auto_string* as)
+.br
+.in +4n
+as - the auto_string to operate on
+.br
+returns - the current length of buf (strlen)
+.in
+.sp
+.nf
+
+#include "debug_utils.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <softsprocket/container.h>
+
+
+int auto_string_test () {
+	char* str_parts[7] = {
+		"Hello",
+		",",
+		" ",
+		"Brave",
+		" ",
+		"World",
+		"!"
+	};
+
+	char* test_str = "Hello, Brave World!";
+
+	auto_string* as = auto_string_create (10);
+
+	if (as == NULL) {
+		PMSG ("auto_string allocation failed");
+		return EXIT_FAILURE;
+	}
+
+	if (as->count != 0) {
+		PMSG ("auto_string count intialization failure");
+	       	return EXIT_FAILURE;
+	}
+
+	if (as->size != 10) {
+		PMSG ("auto_string size intialization failure");
+	       	return EXIT_FAILURE;
+	}
+
+	for (int i = 0 ; i < 7; ++i) {
+		auto_string_append (as, str_parts[i]);
+	}
+
+	if (strcmp (as->buf, test_str) != 0) {
+		fprintf (stderr, "<test: %s>\n", test_str);
+		fprintf (stderr, "<auto: %s>\n", as->buf);
+		PMSG ("auto_string strcmp test failed");
+		return EXIT_FAILURE;
+	}
+
+	if (auto_string_length (as) != strlen (test_str)) {
+		fprintf (stderr, "%lu != %lu\n", auto_string_length (as), strlen (test_str));
+		PMSG ("auto_string_length test failed");
+		return EXIT_FAILURE;	
+	}
+
+	auto_string_delete (as);
+
+	printf ("auto_string tests pass\n");
+
+	return EXIT_SUCCESS;
+}
+.fi
+.SH BUGS
+No known bugs.
+.SH AUTHOR
+Greg Martin <greg@softsprocket.com>
+.SH "SEE ALSO"
+.BR hash_table (3),
+.BR set (3),
+.BR auto_array (3)
+
+

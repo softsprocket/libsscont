@@ -1,0 +1,281 @@
+.\" Process this file with
+.\" groff -man -Tascii auto_array.3
+.\"
+.TH AUTO_ARRAY 3 2014.11.01 "" "SoftSprocket libsscont"
+.SH NAME
+auto_array_create auto_array_put auto_array_get auto_array_add auto_array_last auto_array_insert auto_array_remove auto_array_delete  \- auto sizing array in C
+.SH SYNOPSIS
+.nf
+.B #include <softsprocket/containers.h>
+.sp
+.B auto_array* auto_array_create (size_t initial_size);
+.br
+.B ssize_t auto_array_add (auto_array* aa, void* data);
+.br
+.B ssize_t auto_array_put (auto_array* aa, size_t pos, void* data);
+.br
+.B void* auto_array_get (auto_array* aa, size_t pos);
+.br
+.B void* auto_array_last (auto_array* aa);
+.br
+.B ssize_t auto_array_insert (auto_array* aa, size_t pos, void* data);
+.br
+.B void* auto_array_remove (auto_array* aa, size_t pos);
+.br
+.B void auto_array_delete (auto_array* aa, void (*delete_entry)(void* entry));
+.fi
+.sp
+Link with \fI\-lsscont\fP.
+.sp
+.SH DESCRIPTION
+These functions provide an interface to an auto sizing array in C.
+.sp
+.br 
+auto_array* auto_array_create (size_t initial_size)  	
+.in +4n
+.br
+initial_size - the number of entries the array is initialized for.
+.br
+returns - a pointer to an auto_array or NULL if an error occurs
+.in
+.br
+.sp
+void auto_array_delete (auto_array* aa, void (*delete_entry)(void* entry))
+.in +4n
+.br		
+aa - the auto_array to operate on
+.br
+delete_entry - if not NULL this function will be csalled on each member of the array before the array is freed.   		 
+.in
+.br
+.sp
+.nf
+The structure that is returned by auto_array_create: 
+
+typedef struct {
+	size_t size;	// current allocated size
+	size_t count;	// number of elements
+	void** data;	
+} auto_array;
+
+.fi
+.br
+.sp
+ssize_t auto_array_add (auto_array* aa, void* data)
+.br
+.in +4n
+aa - the auto_array to operate on
+.br
+data - the pointer to be stored
+.br
+returns - auto_array count or -1 if an error occurs  
+.br
+.in
+.sp
+ssize_t auto_array_put (auto_array* aa, size_t pos, void* data)
+.br
+.in +4n
+aa - the auto_array to operate on
+.br
+pos - the pos to store the item - replacing the item at that location. It is the programmers responsibility to recover the memory allocated for the pointer that was stored there. 
+.br
+data - the item to be stored
+.br
+returns - the number of items in the array or -1 if an error occurs
+.br
+.in
+.sp
+void* auto_array_get (auto_array* aa, size_t pos)
+.br
+.in +4n
+aa - the auto_array to operate on
+.br
+pos - the index to the item to retrieve
+.br
+returns - an item or NULL if no item at that index
+.br
+.in
+.sp
+void* auto_array_last (auto_array* aa)
+.br
+.in +4n
+aa - the auto_array to operate on
+.br
+returns - the item at the end of the array or NULL if the array is empty
+.in
+.sp
+ssize_t auto_array_insert (auto_array* aa, size_t pos, void* data)
+.br
+.in +4n
+aa - the auto_array to operate on
+.br
+pos - the pos to insert the item - the items that follow are shifted
+.br
+data - the item to be stored
+.br
+returns - the number of items in the array or -1 if an error occurs
+.br
+.in
+.sp
+void* auto_array_remove (auto_array* aa, size_t pos);
+.br
+.in +4n
+aa - the auto_array to operate on
+.br
+pos - the index of the item to be removed - following items are shifted down
+.br
+returns - the item that has been removed or NULL if an error has occurred  
+.in
+.sp
+.sp
+.nf
+
+#include "debug_utils.h"
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <softsprocket/container.h>
+
+int auto_array_test () {
+	auto_array* aa = auto_array_create (10);
+
+	if (aa == NULL) {
+		PMSG ("auto_array_create returned NULL");
+		return EXIT_FAILURE;
+	}
+
+	if (aa->size != 10) {
+		PMSG ("auto_array initialization: wrong size value");
+		return EXIT_FAILURE;
+	}
+
+	if (aa->count != 0) {
+		PMSG ("auto_array initialization: wrong count value");
+		return EXIT_FAILURE;
+	}
+
+	for (int i = 0; i < 1000; ++i) {
+		int* ip = malloc (sizeof (int));
+		if (ip == NULL) {
+			PERR ("malloc");
+			exit (EXIT_FAILURE);
+		}
+
+		*ip = i;
+
+		auto_array_add (aa, ip);
+	}
+
+	if (aa->count != 1000) {
+		PDEC ();
+		fprintf (stderr, "auto_array_add: aa->count - %lu != 1000\n", aa->count);
+		return EXIT_FAILURE;
+	}
+
+	for (int i = 0; i < 1000; ++i) {
+		int* ip = auto_array_get (aa, i);
+
+		if (*ip != i) {
+			PDEC ();
+			fprintf (stderr, "auto_array_get: %d != %d\n", *ip, i);
+			return EXIT_FAILURE;
+		}
+
+		free (ip);
+		
+		ip = malloc (sizeof (int));
+		if (ip == NULL) {
+			PERR ("malloc");
+			exit (EXIT_FAILURE);
+		}
+		
+		*ip = 2 * i;
+		ssize_t pos = 0;
+		if ((pos = auto_array_put (aa, i, ip)) != 1000) {
+			PDEC ();
+			fprintf (stderr, "auto_array_put: put at %d returned %ld\n", i, pos);
+			return EXIT_FAILURE;
+		}
+	}
+
+	for (int i = 0; i < 1000; ++i) {
+		int* ip = auto_array_get (aa, i);
+
+		if (*ip != (i * 2)) {
+			PDEC ();
+			fprintf (stderr, "auto_array_put: %d != %d\n", *ip, 2 * i);
+			return EXIT_FAILURE;
+		}
+	}	
+
+	for (int i = 500; i < 600; i += 10) {
+		int* ip = malloc (sizeof (int));
+		if (ip == NULL) {
+			PERR ("malloc");
+			exit (EXIT_FAILURE);
+		}
+
+		*ip = aa->count;
+		ssize_t len = auto_array_insert (aa, i, ip);
+		if (len != (*ip + 1)) {
+			PDEC ();
+			fprintf (stderr, "auto_array_insert: %lu != %d\n", len, *ip + 1);
+			return EXIT_FAILURE;
+		}
+
+		int* rv = auto_array_get (aa, i);
+		if (*rv != *ip) {
+			PDEC ();
+			fprintf (stderr, "auto_array_insert: %d != %d\n", *rv, *ip);
+			return EXIT_FAILURE;
+		}
+	}
+
+	int* l = auto_array_last (aa);
+	if (*l != 1998) {
+		PDEC ();
+		fprintf (stderr, "auto_array_last: %d != 1998\n", *l);
+		return EXIT_FAILURE;
+	}
+	
+
+	int* rl = auto_array_remove (aa, aa->count - 1);
+      	if (rl == NULL) {
+		PDEC ();
+		fprintf (stderr, "auto_array_remove returned NULL\n");
+		return EXIT_FAILURE;
+	}
+
+	if (*l != *rl) {
+		PDEC ();
+		fprintf (stderr, "auto_array_remove: %d != %d\n", *l, *rl);
+		return EXIT_FAILURE;
+	}
+
+	free (rl);
+
+	l = auto_array_last (aa);
+	if (*l != 1996) {
+		PDEC ();
+		fprintf (stderr, "auto_array_last: %d != 1996\n", *l);
+		return EXIT_FAILURE;
+	}
+
+	auto_array_delete (aa, free);
+
+	printf ("auto_array tests pass\n");
+
+	return EXIT_SUCCESS;
+}
+
+.fi
+.SH BUGS
+No known bugs.
+.SH AUTHOR
+Greg Martin <greg@softsprocket.com>
+.SH "SEE ALSO"
+.BR hash_table (3),
+.BR set (3),
+.BR auto_string (3)
+
+

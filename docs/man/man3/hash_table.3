@@ -1,0 +1,254 @@
+.\" Process this file with
+.\" groff -man -Tascii hash_table.3
+.\"
+.TH HASH_TABLE 3 2014.11.01 "" "SoftSprocket libsscont"
+.SH NAME
+hash_table_create hash_table_put hash_table_get hash_table_get_all hash_table_remove hash_table_delete hash_table_keys \- auto sizing hash table in C
+.SH SYNOPSIS
+.nf
+.B #include <softsprocket/containers.h>
+.sp
+.B hash_table* hash_table_create (size_t size_table)
+.br
+.B hash_entry* hash_table_put (hash_table* ht, char* key, void* value);
+.br
+.B void* hash_table_get (hash_table* ht, char* key);
+.br
+.B auto_array* hash_table_get_all (hash_table* ht, char* key);
+.br
+.B void* hash_table_remove (hash_table* ht, char* key);
+.br
+.B auto_array* hash_table_keys (hash_table* ht);
+.br
+.B void hash_table_delete (hash_table* ht, void (*delete_value)(void*));
+.fi
+.sp
+Link with \fI\-lsscont\fP.
+.sp
+.SH DESCRIPTION
+These functions provide an interface to an auto sizing hash_table in C.
+.sp
+.br 
+hash_table* hash_table_create (size_t size_table)  	
+.in +4n
+.br
+size_table param - the number of buckets the hash_table will have.
+.br
+returns - a pointer to a hash_table or NULL if an error occurs
+.in
+.br
+.sp
+void hash_table_delete (hash_table* ht, void (*delete_value)(void*))
+.in +4n
+.br		
+ht - the hashtable to operate on
+.br
+delete_value - a function called on each item before the hash_table is freed. It may be NULL.		 
+.in
+.br
+.sp
+.nf
+The structure that is returned by hash_table_create: 
+typedef struct {
+	size_t size;
+	hash_bucket** buckets;
+} hash_table;
+
+The buckets:
+typedef struct {
+	size_t size;
+	size_t count;
+	hash_entry** entries;
+} hash_bucket;
+
+The entries:
+typedef struct {
+	uint32_t hash;
+	char* key;
+	void* value;
+} hash_entry;
+
+.fi
+.br
+.sp
+hash_entry* hash_table_put (hash_table* ht, char* key, void* value)
+.br
+.in +4n
+ht - the hashtable to operate on
+.br
+key - a string key that will be used to identify the entry. A copy of the key is made and will be 
+freed when hash_table_delete is called. Freeing any memory from the original is the programmers
+responsibility.  
+.br
+value - the item to be stored.
+.br
+returns - the hash_entry object that is used internally or NULL in the event of an error. 
+.br
+.in
+.sp
+void* hash_table_get (hash_table* ht, char* key)
+.br
+.in +4n
+ht - the hashtable to operate on
+.br
+key - the key to the entry to retrieve
+.br
+returns - the first stored value found with that key or NULL if not found
+.br
+.in
+.sp
+auto_array* hash_table_get_all (hash_table* ht, char* key)
+.br
+.in +4n
+ht - the hashtable to operate on
+.br
+key - the key to the entries to retrieve
+.br
+returns - all entries with that key or NULL if none are found
+.br
+.in
+.sp
+void* hash_table_remove (hash_table* ht, char* key);
+.br
+.in +4n
+ht - the hashtable to operate on
+.br
+key - the key to the entry to remove
+.br
+returns - the first stored value found with that key, removing it from the table, or NULL if not found
+.in
+.sp
+auto_array* hash_table_keys (hash_table* ht)
+.br
+.in +4n
+ht - the hashtable to operate on
+.br
+returns - an auto_array containing all the keys in the table
+.in
+.sp
+.sp
+.nf
+
+#include "debug_utils.h"
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <softsprocket/container.h>
+
+int hash_table_test () {
+	hash_table* ht = hash_table_create (10);
+	if (ht == NULL) {
+		PMSG ("hash_table_create: returned NULL");
+		return EXIT_FAILURE;
+	}
+
+	if (ht->size != 10) {
+		PDEC();
+		fprintf (stderr, "hash_table_create initialization: ht->size %lu != 10\n", ht->size);
+		return EXIT_FAILURE;
+	}
+
+	char* key_values[6][2] = {
+		{ "red", "Roses are red" },
+		{ "red", "Apples are red" },
+		{ "red", "Books are read" },
+		{ "blue", "The sky is blue" },
+		{ "green", "Grass is green" },
+		{ "green", "Avacadoes are green"}
+	};
+
+	for (int i = 0; i < 6; ++i) {
+		hash_entry* he = hash_table_put (ht, key_values[i][0], key_values[i][1]);
+		if (he == NULL) {
+			PMSG ("hash_table_put: returned NULL");
+			return EXIT_FAILURE;
+		}
+		
+		if (strcmp (he->key, key_values[i][0]) != 0) {
+			PDEC ();
+			fprintf (stderr, "hash_table_put: hash_entry key %s != %s\n", he->key, key_values[i][0]);
+			return EXIT_FAILURE;
+		}
+
+	}
+
+	auto_array* keys = hash_table_keys (ht);
+	if (keys->count != 6) {
+		PDEC ();
+		fprintf (stderr, "hash_table_keys count %lu != 6\n", keys->count);
+		return EXIT_FAILURE;
+	}
+
+	auto_array_delete (keys, NULL);
+
+	auto_array* reds = hash_table_get_all (ht, "red");
+	if (reds == NULL) {
+		PMSG ("hash_table_get_all: returned NULL");
+		return EXIT_FAILURE;
+	}
+
+	if (reds->count != 3) {
+		PDEC ();
+		fprintf (stderr, "hash_table_get_all \"red\" count %lu != 3\n", reds->count);
+		return EXIT_FAILURE;
+	}
+
+	for (int i = 0; i < reds->count; ++i) {
+		char* s = auto_array_get(reds, i);
+		if (strcmp (s, key_values[i][1]) != 0) {
+			PDEC ();
+			fprintf (stderr, "hash_table_get_all: %s != %s\n", s, key_values[i][1]);
+			return EXIT_FAILURE;
+		}
+	}
+
+	auto_array_delete (reds, NULL);
+
+	char* blue_str = hash_table_get (ht, "blue");
+	if (blue_str == NULL) {
+		PMSG ("hash_table_get: returned NULL");
+		return EXIT_FAILURE;
+	}
+
+	if (strcmp (blue_str, key_values[3][1]) != 0) {
+		PDEC ();
+		fprintf (stderr, "hash_table_get: %s != %s\n", blue_str, key_values[3][1]);
+		return EXIT_FAILURE;
+	}
+
+	blue_str = hash_table_remove (ht, "blue");
+	if (blue_str == NULL) {
+		PMSG ("hash_table_remove: returned NULL");
+		return EXIT_FAILURE;
+	}
+
+	if (strcmp (blue_str, key_values[3][1]) != 0) {
+		PDEC ();
+		fprintf (stderr, "hash_table_remove: %s != %s\n", blue_str, key_values[3][1]);
+		return EXIT_FAILURE;
+	}
+
+	blue_str = hash_table_get (ht, "blue");
+	if (blue_str != NULL) {
+		PDEC ();
+		fprintf (stderr, "hash_table_remove:  get blue returned %s\n", blue_str);
+		return EXIT_FAILURE;
+	}
+
+	hash_table_delete (ht, NULL);
+
+	printf ("hash_table tests pass\n");
+
+	return EXIT_SUCCESS;
+}
+.fi
+.SH BUGS
+No known bugs.
+.SH AUTHOR
+Greg Martin <greg@softsprocket.com>
+.SH "SEE ALSO"
+.BR auto_array (3),
+.BR set (3),
+.BR auto_string (3)
+
+

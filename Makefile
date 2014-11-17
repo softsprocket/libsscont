@@ -18,7 +18,7 @@ $(distdir).tar.gz: $(distdir)
 	rm -rf $(distdir)
 
 $(distdir): FORCE
-	mkdir -p $(distdir)/src $(distdir)/lib $(distdir)/tests $(distdir)/include $(distdir)/bin $(distdir)/docs
+	mkdir -p $(distdir)/src $(distdir)/lib $(distdir)/tests $(distdir)/include $(distdir)/docs
 	cp Makefile $(distdir)
 	cp src/Makefile $(distdir)/src
 	cp src/*.c $(distdir)/src
@@ -45,7 +45,7 @@ check: all
 
 memtest: all
 	cd tests && $(MAKE) $@
-	export LD_LIBRARY_PATH=lib/; valgrind --tool=memcheck --leak-check=yes  --track-origins=yes -v tests/sscont_test
+	export LD_LIBRARY_PATH=lib/; valgrind --tool=memcheck --leak-check=yes  --track-origins=yes -v tests/$(test_exec)
 
 docs: 
 	doxygen

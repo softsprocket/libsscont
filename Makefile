@@ -1,5 +1,5 @@
 export package = sscont
-export version = 0.1.0
+export version = 1.0
 export test_exec = $(package)_test
 export CFLAGS = -g -O0 -Wall
 export prefix = /usr

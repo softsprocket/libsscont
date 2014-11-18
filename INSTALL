@@ -4,6 +4,12 @@ Installation of the library is accomplished by running the commands:
 make 
 sudo make install
 
+You can set CFLAGS at the commandline. Default is '-g -O0 -Wall'. For optimized code without
+debugging symbols try:
+
+make CFLAGS='-O2 -Wall'
+sudo make install
+ 
 Uninstallation is accomplished:
 
 sudo make uninstall

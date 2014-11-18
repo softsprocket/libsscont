@@ -10,6 +10,10 @@ distdir = $(tarname)-$(version)
 
 all clean lib$(package).$(version).so install uninstall:
 	cd src && $(MAKE) $@
+	cd tests && $(MAKE) $@
+
+lib$(package).$(version).so install uninstall:
+	cd src && $(MAKE) $@
 
 dist: $(distdir).tar.gz
 
@@ -40,7 +44,6 @@ distcheck: $(distdir).tar.gz
 
 
 check: all
-	cd tests && $(MAKE) $@
 	export LD_LIBRARY_PATH=lib/; tests/$(test_exec)
 
 memtest: all

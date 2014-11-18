@@ -19,7 +19,7 @@ string.o: string.c
 	$(CC) -c string.c $(CFLAGS) $(additional_flags) -o $@
 
 lib$(package).$(version).so: $(objects)
-	mkdir ../lib
+	mkdir -p ../lib
 	$(CC) $(CFLAGS) $(additional_flags) -shared -o ../lib/$@ $(objects) $(LIBS)
 
 clean:

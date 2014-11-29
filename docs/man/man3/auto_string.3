@@ -118,21 +118,21 @@ int auto_string_test () {
 	}
 
 	if (strcmp (as->buf, test_str) != 0) {
-		fprintf (stderr, "<test: %s>\n", test_str);
-		fprintf (stderr, "<auto: %s>\n", as->buf);
+		fprintf (stderr, "<test: %s>\\n", test_str);
+		fprintf (stderr, "<auto: %s>\\n", as->buf);
 		PMSG ("auto_string strcmp test failed");
 		return EXIT_FAILURE;
 	}
 
 	if (auto_string_length (as) != strlen (test_str)) {
-		fprintf (stderr, "%lu != %lu\n", auto_string_length (as), strlen (test_str));
+		fprintf (stderr, "%lu != %lu\\n", auto_string_length (as), strlen (test_str));
 		PMSG ("auto_string_length test failed");
 		return EXIT_FAILURE;	
 	}
 
 	auto_string_delete (as);
 
-	printf ("auto_string tests pass\n");
+	printf ("auto_string tests pass\\n");
 
 	return EXIT_SUCCESS;
 }

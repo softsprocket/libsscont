@@ -168,7 +168,7 @@ int auto_array_test () {
 
 	if (aa->count != 1000) {
 		PDEC ();
-		fprintf (stderr, "auto_array_add: aa->count - %lu != 1000\n", aa->count);
+		fprintf (stderr, "auto_array_add: aa->count - %lu != 1000\\n", aa->count);
 		return EXIT_FAILURE;
 	}
 
@@ -177,7 +177,7 @@ int auto_array_test () {
 
 		if (*ip != i) {
 			PDEC ();
-			fprintf (stderr, "auto_array_get: %d != %d\n", *ip, i);
+			fprintf (stderr, "auto_array_get: %d != %d\\n", *ip, i);
 			return EXIT_FAILURE;
 		}
 
@@ -193,7 +193,7 @@ int auto_array_test () {
 		ssize_t pos = 0;
 		if ((pos = auto_array_put (aa, i, ip)) != 1000) {
 			PDEC ();
-			fprintf (stderr, "auto_array_put: put at %d returned %ld\n", i, pos);
+			fprintf (stderr, "auto_array_put: put at %d returned %ld\\n", i, pos);
 			return EXIT_FAILURE;
 		}
 	}
@@ -203,7 +203,7 @@ int auto_array_test () {
 
 		if (*ip != (i * 2)) {
 			PDEC ();
-			fprintf (stderr, "auto_array_put: %d != %d\n", *ip, 2 * i);
+			fprintf (stderr, "auto_array_put: %d != %d\\n", *ip, 2 * i);
 			return EXIT_FAILURE;
 		}
 	}	
@@ -219,14 +219,14 @@ int auto_array_test () {
 		ssize_t len = auto_array_insert (aa, i, ip);
 		if (len != (*ip + 1)) {
 			PDEC ();
-			fprintf (stderr, "auto_array_insert: %lu != %d\n", len, *ip + 1);
+			fprintf (stderr, "auto_array_insert: %lu != %d\\n", len, *ip + 1);
 			return EXIT_FAILURE;
 		}
 
 		int* rv = auto_array_get (aa, i);
 		if (*rv != *ip) {
 			PDEC ();
-			fprintf (stderr, "auto_array_insert: %d != %d\n", *rv, *ip);
+			fprintf (stderr, "auto_array_insert: %d != %d\\n", *rv, *ip);
 			return EXIT_FAILURE;
 		}
 	}
@@ -234,7 +234,7 @@ int auto_array_test () {
 	int* l = auto_array_last (aa);
 	if (*l != 1998) {
 		PDEC ();
-		fprintf (stderr, "auto_array_last: %d != 1998\n", *l);
+		fprintf (stderr, "auto_array_last: %d != 1998\\n", *l);
 		return EXIT_FAILURE;
 	}
 	
@@ -242,13 +242,13 @@ int auto_array_test () {
 	int* rl = auto_array_remove (aa, aa->count - 1);
       	if (rl == NULL) {
 		PDEC ();
-		fprintf (stderr, "auto_array_remove returned NULL\n");
+		fprintf (stderr, "auto_array_remove returned NULL\\n");
 		return EXIT_FAILURE;
 	}
 
 	if (*l != *rl) {
 		PDEC ();
-		fprintf (stderr, "auto_array_remove: %d != %d\n", *l, *rl);
+		fprintf (stderr, "auto_array_remove: %d != %d\\n", *l, *rl);
 		return EXIT_FAILURE;
 	}
 
@@ -257,13 +257,13 @@ int auto_array_test () {
 	l = auto_array_last (aa);
 	if (*l != 1996) {
 		PDEC ();
-		fprintf (stderr, "auto_array_last: %d != 1996\n", *l);
+		fprintf (stderr, "auto_array_last: %d != 1996\\n", *l);
 		return EXIT_FAILURE;
 	}
 
 	auto_array_delete (aa, free);
 
-	printf ("auto_array tests pass\n");
+	printf ("auto_array tests pass\\n");
 
 	return EXIT_SUCCESS;
 }

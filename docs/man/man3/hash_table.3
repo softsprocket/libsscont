@@ -144,7 +144,7 @@ int hash_table_test () {
 
 	if (ht->size != 10) {
 		PDEC();
-		fprintf (stderr, "hash_table_create initialization: ht->size %lu != 10\n", ht->size);
+		fprintf (stderr, "hash_table_create initialization: ht->size %lu != 10\\n", ht->size);
 		return EXIT_FAILURE;
 	}
 
@@ -166,7 +166,7 @@ int hash_table_test () {
 		
 		if (strcmp (he->key, key_values[i][0]) != 0) {
 			PDEC ();
-			fprintf (stderr, "hash_table_put: hash_entry key %s != %s\n", he->key, key_values[i][0]);
+			fprintf (stderr, "hash_table_put: hash_entry key %s != %s\\n", he->key, key_values[i][0]);
 			return EXIT_FAILURE;
 		}
 
@@ -175,7 +175,7 @@ int hash_table_test () {
 	auto_array* keys = hash_table_keys (ht);
 	if (keys->count != 6) {
 		PDEC ();
-		fprintf (stderr, "hash_table_keys count %lu != 6\n", keys->count);
+		fprintf (stderr, "hash_table_keys count %lu != 6\\n", keys->count);
 		return EXIT_FAILURE;
 	}
 
@@ -189,7 +189,7 @@ int hash_table_test () {
 
 	if (reds->count != 3) {
 		PDEC ();
-		fprintf (stderr, "hash_table_get_all \"red\" count %lu != 3\n", reds->count);
+		fprintf (stderr, "hash_table_get_all \\"red\\" count %lu != 3\\n", reds->count);
 		return EXIT_FAILURE;
 	}
 
@@ -197,7 +197,7 @@ int hash_table_test () {
 		char* s = auto_array_get(reds, i);
 		if (strcmp (s, key_values[i][1]) != 0) {
 			PDEC ();
-			fprintf (stderr, "hash_table_get_all: %s != %s\n", s, key_values[i][1]);
+			fprintf (stderr, "hash_table_get_all: %s != %s\\n", s, key_values[i][1]);
 			return EXIT_FAILURE;
 		}
 	}
@@ -212,7 +212,7 @@ int hash_table_test () {
 
 	if (strcmp (blue_str, key_values[3][1]) != 0) {
 		PDEC ();
-		fprintf (stderr, "hash_table_get: %s != %s\n", blue_str, key_values[3][1]);
+		fprintf (stderr, "hash_table_get: %s != %s\\n", blue_str, key_values[3][1]);
 		return EXIT_FAILURE;
 	}
 
@@ -224,20 +224,20 @@ int hash_table_test () {
 
 	if (strcmp (blue_str, key_values[3][1]) != 0) {
 		PDEC ();
-		fprintf (stderr, "hash_table_remove: %s != %s\n", blue_str, key_values[3][1]);
+		fprintf (stderr, "hash_table_remove: %s != %s\\n", blue_str, key_values[3][1]);
 		return EXIT_FAILURE;
 	}
 
 	blue_str = hash_table_get (ht, "blue");
 	if (blue_str != NULL) {
 		PDEC ();
-		fprintf (stderr, "hash_table_remove:  get blue returned %s\n", blue_str);
+		fprintf (stderr, "hash_table_remove:  get blue returned %s\\n", blue_str);
 		return EXIT_FAILURE;
 	}
 
 	hash_table_delete (ht, NULL);
 
-	printf ("hash_table tests pass\n");
+	printf ("hash_table tests pass\\n");
 
 	return EXIT_SUCCESS;
 }

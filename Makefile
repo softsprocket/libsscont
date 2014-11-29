@@ -24,6 +24,7 @@ $(distdir).tar.gz: $(distdir)
 $(distdir): FORCE
 	mkdir -p $(distdir)/src $(distdir)/lib $(distdir)/tests $(distdir)/include $(distdir)/docs
 	cp Makefile $(distdir)
+	cp INSTALL README README.md LICENSE $(distdir)
 	cp src/Makefile $(distdir)/src
 	cp src/*.c $(distdir)/src
 	cp include/*.h $(distdir)/include

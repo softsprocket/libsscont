@@ -29,7 +29,7 @@ $(distdir): FORCE
 	cp include/*.h $(distdir)/include
 	cp tests/*.c $(distdir)/tests
 	cp tests/Makefile $(distdir)/tests
-	cp -r docs/*.3 $(distdir)/docs
+	cp -r docs/ $(distdir)/docs/
 	cp Doxyfile $(distdir)/
 
 distcheck: $(distdir).tar.gz

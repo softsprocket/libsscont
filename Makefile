@@ -8,11 +8,11 @@ tarname = $(package)
 distdir = $(tarname)-$(version)
 
 
-all clean lib$(package).$(version).so install uninstall:
+all clean lib$(package).$(version).so:
 	cd src && $(MAKE) $@
 	cd tests && $(MAKE) $@
 
-lib$(package).$(version).so install uninstall:
+install uninstall:
 	cd src && $(MAKE) $@
 
 dist: $(distdir).tar.gz

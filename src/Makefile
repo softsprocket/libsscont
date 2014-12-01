@@ -32,14 +32,17 @@ install:
 	install -m 0644 ../lib/lib$(package).$(version).so  $(DESTDIR)$(prefix)/lib/softsprocket
 	install -m 0644 ../include/container.h $(DESTDIR)$(prefix)/include/softsprocket
 	install -m 0644 ../include/debug_utils.h $(DESTDIR)$(prefix)/include/softsprocket
-	
+	-ln -s $(DESTDIR)$(prefix)/lib/softsprocket/lib$(package).$(version).so $(DESTDIR)$(prefix)/lib$(package).so
+
+
 uninstall:
 	-rm  $(DESTDIR)$(prefix)/lib/softsprocket/lib$(package).$(version).so
 	-rm -d  $(DESTDIR)$(prefix)/lib/softsprocket
 	-rm $(DESTDIR)$(prefix)/include/softsprocket/container.h
 	-rm $(DESTDIR)$(prefix)/include/softsprocket/debug_utils.h
 	-rm -d $(DESTDIR)$(prefix)/include/softsprocket
-	
+	-rm $(DESTDIR)$(prefix)/lib$(package).so	
+
 
 .PHONY: all clean install uninstall
 
